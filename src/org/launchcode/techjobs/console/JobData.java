@@ -8,8 +8,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * Created by LaunchCode
@@ -43,6 +45,7 @@ public class JobData {
             }
         }
 
+        Collections.sort(values);
         return values;
     }
 
@@ -51,7 +54,8 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        return allJobs;
+//        return allJobs;
+        return new ArrayList<>(allJobs);
     }
 
     /**
@@ -76,7 +80,7 @@ public class JobData {
 
             String aValue = row.get(column);
 
-            if (aValue.contains(value)) {
+            if (aValue.toLowerCase().replaceAll("\\s", "").contains(value.toLowerCase().replaceAll("\\s", ""))) {
                 jobs.add(row);
             }
         }
@@ -102,7 +106,6 @@ public class JobData {
             List<CSVRecord> records = parser.getRecords();
             Integer numberOfColumns = records.get(0).size();
             String[] headers = parser.getHeaderMap().keySet().toArray(new String[numberOfColumns]);
-
             allJobs = new ArrayList<>();
 
             // Put the records into a more friendly format
@@ -125,4 +128,19 @@ public class JobData {
         }
     }
 
+    public static ArrayList<HashMap<String,String>> findByValue(String value){
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for(HashMap<String,String> job: allJobs){
+            for(String header:job.keySet()){
+                if(job.get(header).toLowerCase().replaceAll("\\s", "").contains(value.toLowerCase().replaceAll("\\s", ""))){
+                    jobs.add(job);
+                    break;
+                }
+            }
+        }
+        return jobs;
+    }
 }
